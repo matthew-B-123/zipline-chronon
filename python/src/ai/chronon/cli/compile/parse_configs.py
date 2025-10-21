@@ -22,6 +22,11 @@ def from_folder(cls: type, input_dir: str, compile_context: CompileContext) -> L
     """
 
     python_files = glob.glob(os.path.join(input_dir, "**/*.py"), recursive=True)
+    
+    # Filter files if file_filter is provided
+    if compile_context.file_filter:
+        filter_abs_path = os.path.join(compile_context.chronon_root, compile_context.file_filter)
+        python_files = [f for f in python_files if os.path.abspath(f) == os.path.abspath(filter_abs_path)]
 
     results = []
 
