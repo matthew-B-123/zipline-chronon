@@ -1,0 +1,63 @@
+{
+  "metaData": {
+    "customJson": "{\"airflowDependencies\": []}",
+    "executionInfo": {
+      "conf": {
+        "common": {
+          "spark.chronon.partition.column": "_DATE"
+        }
+      },
+      "env": {
+        "common": {
+          "CUSTOMER_ID": "canary",
+          "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+          "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+          "GCP_PROJECT_ID": "canary-443022",
+          "GCP_REGION": "us-central1",
+          "VERSION": "latest"
+        },
+        "modeEnvironments": {
+          "backfill": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          },
+          "streaming": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          },
+          "upload": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          }
+        }
+      },
+      "scheduleCron": "@daily"
+    },
+    "name": "affirm.paybright_repayment_data_v1_0_sq.v1__1",
+    "outputNamespace": "affirm",
+    "sourceFile": "staging_queries/affirm/paybright_repayment_data_v1_0_sq.py",
+    "tableProperties": {
+      "provider": "iceberg",
+      "write.format.default": "parquet"
+    },
+    "team": "affirm",
+    "version": "1"
+  },
+  "query": "\n      WITH src AS (\n        SELECT\n          /* Keys & timestamps - handle schema evolution (old: 'created', new: 'snapshot_time'/'processed_time') */\n          CAST(user_phone_number AS STRING) AS user_phone_number,\n          CAST(COALESCE(snapshot_time, created) AS TIMESTAMP) AS snapshot_time,\n          CAST(COALESCE(processed_time, created) AS TIMESTAMP) AS processed_time,\n\n          /* Features (cast for stability) */\n          CAST(galactus__paybright__user__history_average_lateness_days__v1           AS DOUBLE)\n            AS galactus__paybright__user__history_average_lateness_days__v1,\n          CAST(galactus__paybright__user__history_average_zeroed_lateness_days__v1    AS DOUBLE)\n            AS galactus__paybright__user__history_average_zeroed_lateness_days__v1,\n          CAST(galactus__paybright__user__history_days_since_last_payment__v1         AS DOUBLE)\n            AS galactus__paybright__user__history_days_since_last_payment__v1,\n          CAST(galactus__paybright__user__history_max_lateness_days__v1               AS DOUBLE)\n            AS galactus__paybright__user__history_max_lateness_days__v1,\n          CAST(galactus__paybright__user__history_num_outstanding_loans__v1           AS DOUBLE)\n            AS galactus__paybright__user__history_num_outstanding_loans__v1,\n          CAST(galactus__paybright__user__history_num_payments_last_60d__v1           AS DOUBLE)\n            AS galactus__paybright__user__history_num_payments_last_60d__v1,\n          CAST(galactus__paybright__user__history_prop_fully_paid_off_loans__il__v1   AS DOUBLE)\n            AS galactus__paybright__user__history_prop_fully_paid_off_loans__il__v1,\n          CAST(galactus__paybright__user__history_prop_fully_paid_off_loans__sp__v1   AS DOUBLE)\n            AS galactus__paybright__user__history_prop_fully_paid_off_loans__sp__v1,\n          CAST(galactus__paybright__user__history_total_payment_amount_cents_60d__v1  AS DOUBLE)\n            AS galactus__paybright__user__history_total_payment_amount_cents_60d__v1,\n          CAST(galactus__paybright__user__history_total_payment_amount_cents__v1      AS DOUBLE)\n            AS galactus__paybright__user__history_total_payment_amount_cents__v1,\n\n          /* optional event-time in ms (if needed later) */\n          CAST(unix_timestamp(snapshot_time) * 1000 AS BIGINT) AS ts,\n\n          /* Derive ds from snapshot_time (avoid brittle path regex) */\n          TO_DATE(snapshot_time) AS ds\n        FROM paybright_raw\n        WHERE user_phone_number IS NOT NULL\n      )\n      SELECT * FROM src\n    ",
+  "setups": [
+    "CREATE OR REPLACE TEMPORARY VIEW paybright_raw USING parquet OPTIONS (path 's3a://affirm-risk-sherlock-ca/feature-store/paybright_repayment_data/v1/*/*/*/out/')"
+  ],
+  "tableDependencies": []
+}

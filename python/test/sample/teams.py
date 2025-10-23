@@ -86,3 +86,5 @@ kaggle = Team(outputNamespace="kaggle")
 quickstart = Team(outputNamespace="quickstart")
 
 risk = Team(outputNamespace="risk")
+
+affirm = Team(outputNamespace="affirm")

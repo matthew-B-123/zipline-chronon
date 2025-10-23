@@ -11,5 +11,14 @@
       "region": "us-west-2",
       "endpoint": "http://dynamodb:8000"
     }
+  },
+  "affirm": {
+    "namespace": "affirm",
+    "table_properties": {},
+    "online_data_provider": {
+      "type": "dynamodb",
+      "region": "us-west-2",
+      "endpoint": "http://dynamodb:8000"
+    }
   }
 }
