@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COMPOSE_FILE="docker-compose-bootcamp.yml"
+COMPOSE_FILE="docker-compose.yml"
 MINIO_ALIAS="local"
 MINIO_ENDPOINT="http://localhost:9000"
 MINIO_ACCESS_KEY="minioadmin"
