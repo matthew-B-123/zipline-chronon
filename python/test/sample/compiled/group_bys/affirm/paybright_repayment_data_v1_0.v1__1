@@ -1,0 +1,101 @@
+{
+  "accuracy": 1,
+  "aggregations": [],
+  "backfillStartDate": "2023-11-07",
+  "keyColumns": [
+    "user_phone_number"
+  ],
+  "metaData": {
+    "columnHashes": {
+      "galactus__paybright__user__history_average_lateness_days__v1": "9cffd0e19de611d43da963bdef7ab67b",
+      "galactus__paybright__user__history_average_zeroed_lateness_days__v1": "db49df6684dc4e1602351329872593d6",
+      "galactus__paybright__user__history_days_since_last_payment__v1": "e5d06995029602eee9bbfd45611d998b",
+      "galactus__paybright__user__history_max_lateness_days__v1": "a9e65f722bbd13646868ee338ae39135",
+      "galactus__paybright__user__history_num_outstanding_loans__v1": "654653a9944480f629752d1c43394a17",
+      "galactus__paybright__user__history_num_payments_last_60d__v1": "f55dd0a66cfb4cc6a8848bd2cb547a70",
+      "galactus__paybright__user__history_prop_fully_paid_off_loans__il__v1": "1476457749bab3eb560675d470707fce",
+      "galactus__paybright__user__history_prop_fully_paid_off_loans__sp__v1": "fe608f7548494d70dc8aeb2a30fcf75d",
+      "galactus__paybright__user__history_total_payment_amount_cents_60d__v1": "4a2f0368662718fc56de24c361c39d36",
+      "galactus__paybright__user__history_total_payment_amount_cents__v1": "9f547031d3cc0146c532d273138ca7fc",
+      "processed_time": "feb3106d604e7c434bfdd70ae072e125",
+      "snapshot_time": "69e8cfb1c3b7edbeb37a6a00eac6a000",
+      "user_phone_number": "09f4c4dd15b5f9fb5392d160e8b8a71c"
+    },
+    "customJson": "{\"airflowDependencies\": [{\"name\": \"wf_affirm_affirm_paybright_repayment_data_v1_0_sq_v1__1_with_offset_0\", \"spec\": \"affirm.affirm_paybright_repayment_data_v1_0_sq_v1__1/_DATE={{ macros.ds_add(ds, 0) }}\"}]}",
+    "executionInfo": {
+      "conf": {
+        "common": {
+          "spark.chronon.partition.column": "_DATE"
+        }
+      },
+      "env": {
+        "common": {
+          "CUSTOMER_ID": "canary",
+          "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+          "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+          "GCP_PROJECT_ID": "canary-443022",
+          "GCP_REGION": "us-central1",
+          "VERSION": "latest"
+        },
+        "modeEnvironments": {
+          "backfill": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          },
+          "streaming": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          },
+          "upload": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          }
+        }
+      },
+      "historicalBackfill": 0,
+      "scheduleCron": "@daily"
+    },
+    "name": "affirm.paybright_repayment_data_v1_0.v1__1",
+    "online": 1,
+    "outputNamespace": "affirm",
+    "sourceFile": "group_bys/affirm/paybright_repayment_data_v1_0.py",
+    "team": "affirm",
+    "version": "1"
+  },
+  "sources": [
+    {
+      "entities": {
+        "query": {
+          "selects": {
+            "galactus__paybright__user__history_average_lateness_days__v1": "galactus__paybright__user__history_average_lateness_days__v1",
+            "galactus__paybright__user__history_average_zeroed_lateness_days__v1": "galactus__paybright__user__history_average_zeroed_lateness_days__v1",
+            "galactus__paybright__user__history_days_since_last_payment__v1": "galactus__paybright__user__history_days_since_last_payment__v1",
+            "galactus__paybright__user__history_max_lateness_days__v1": "galactus__paybright__user__history_max_lateness_days__v1",
+            "galactus__paybright__user__history_num_outstanding_loans__v1": "galactus__paybright__user__history_num_outstanding_loans__v1",
+            "galactus__paybright__user__history_num_payments_last_60d__v1": "galactus__paybright__user__history_num_payments_last_60d__v1",
+            "galactus__paybright__user__history_prop_fully_paid_off_loans__il__v1": "galactus__paybright__user__history_prop_fully_paid_off_loans__il__v1",
+            "galactus__paybright__user__history_prop_fully_paid_off_loans__sp__v1": "galactus__paybright__user__history_prop_fully_paid_off_loans__sp__v1",
+            "galactus__paybright__user__history_total_payment_amount_cents_60d__v1": "galactus__paybright__user__history_total_payment_amount_cents_60d__v1",
+            "galactus__paybright__user__history_total_payment_amount_cents__v1": "galactus__paybright__user__history_total_payment_amount_cents__v1",
+            "processed_time": "processed_time",
+            "snapshot_time": "snapshot_time",
+            "user_phone_number": "user_phone_number"
+          }
+        },
+        "snapshotTable": "affirm.affirm_paybright_repayment_data_v1_0_sq_v1__1"
+      }
+    }
+  ]
+}

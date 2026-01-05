@@ -47,22 +47,33 @@ EOF
 $SPARK_SUBMIT_PATH \
 --driver-java-options " -Dlog4j.configuration=file:${LOG4J_FILE}" \
 --conf "spark.executor.extraJavaOptions= -XX:ParallelGCThreads=4 -XX:+UseParallelGC -XX:+UseCompressedOops" \
---conf spark.sql.shuffle.partitions=${PARALLELISM:-4000} \
+--conf spark.sql.shuffle.partitions=${PARALLELISM:-4} \
 --conf spark.dynamicAllocation.maxExecutors=${MAX_EXECUTORS:-1000} \
---conf spark.default.parallelism=${PARALLELISM:-4000} \
+--conf spark.default.parallelism=${PARALLELISM:-4} \
 --conf spark.local.dir=${CHRONON_WORKING_DIR} \
 --conf spark.jars.ivy=${CHRONON_WORKING_DIR} \
---conf spark.executor.cores=${EXECUTOR_CORES:-1} \
+--conf spark.executor.cores=${EXECUTOR_CORES:-2} \
 --conf spark.chronon.partition.column="${PARTITION_COLUMN:-ds}" \
 --conf spark.chronon.partition.format="${PARTITION_FORMAT:-yyyy-MM-dd}" \
 --conf spark.chronon.backfill.validation.enabled="${ENABLE_VALIDATION:-false}" \
 --deploy-mode client \
---master "${JOB_MODE:-yarn}" \
+--master "${JOB_MODE:-local[*]}" \
 --executor-memory "${EXECUTOR_MEMORY:-2G}" \
 --driver-memory "${DRIVER_MEMORY:-1G}" \
 --conf spark.app.name=${APP_NAME} \
 --conf spark.chronon.outputParallelismOverride=${OUTPUT_PARALLELISM:--1} \
 --conf spark.chronon.rowCountPerPartition=${ROW_COUNT_PER_PARTITION:--1} \
+--conf spark.hadoop.fs.s3a.access.key=${AWS_ACCESS_KEY_ID} \
+--conf spark.hadoop.fs.s3a.secret.key=${AWS_SECRET_ACCESS_KEY} \
+--conf spark.hadoop.fs.s3a.endpoint=${S3_ENDPOINT} \
+--conf spark.hadoop.fs.s3a.path.style.access=true \
+--conf spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem \
+--conf spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions \
+--conf spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkCatalog \
+--conf spark.sql.catalog.spark_catalog.type=hadoop \
+--conf spark.sql.catalog.spark_catalog.warehouse=s3a://chronon/warehouse \
+--conf spark.sql.defaultCatalog=spark_catalog \
+--packages org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.5.0,org.apache.hadoop:hadoop-aws:3.3.4 \
 --jars "${CHRONON_ONLINE_JAR:-}" \
 "$@" 2>&1                                                  |
 grep --line-buffered -v "YarnScheduler:70"                 |

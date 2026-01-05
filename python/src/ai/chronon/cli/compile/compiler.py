@@ -68,11 +68,32 @@ class Compiler:
             # check if staging_output_dir exists
             staging_dir = self.compile_context.staging_output_dir()
             if os.path.exists(staging_dir):
-                # replace staging_output_dir to output_dir
                 output_dir = self.compile_context.output_dir()
-                if os.path.exists(output_dir):
-                    shutil.rmtree(output_dir)
-                shutil.move(staging_dir, output_dir)
+                
+                # If file_filter is set, only copy the specific compiled files, don't delete others
+                if self.compile_context.file_filter:
+                    # Copy staging files to output, preserving existing files
+                    if not os.path.exists(output_dir):
+                        os.makedirs(output_dir)
+                    
+                    # Copy only the newly compiled files from staging to output
+                    for root, dirs, files in os.walk(staging_dir):
+                        for file in files:
+                            src_file = os.path.join(root, file)
+                            rel_path = os.path.relpath(src_file, staging_dir)
+                            dest_file = os.path.join(output_dir, rel_path)
+                            
+                            # Create destination directory if needed
+                            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
+                            shutil.copy2(src_file, dest_file)
+                    
+                    # Clean up staging
+                    shutil.rmtree(staging_dir)
+                else:
+                    # Normal behavior: replace entire output directory
+                    if os.path.exists(output_dir):
+                        shutil.rmtree(output_dir)
+                    shutil.move(staging_dir, output_dir)
             else:
                 print(
                     f"Staging directory {staging_dir} does not exist. "
@@ -116,7 +137,8 @@ class Compiler:
             self.compile_context.compile_status.add_object_update_display(result, MetaData.__name__)
 
         # Done writing team metadata, close the class
-        self.compile_context.compile_status.close_cls(MetaData.__name__)
+        skip_deletes = self.compile_context.file_filter is not None
+        self.compile_context.compile_status.close_cls(MetaData.__name__, skip_deletes=skip_deletes)
 
     def _compile_class_configs(
         self, config_info: ConfigInfo
@@ -135,7 +157,8 @@ class Compiler:
         if errors:
             compile_result.error_dict.update(errors)
 
-        self.compile_context.compile_status.close_cls(config_info.cls.__name__)
+        skip_deletes = self.compile_context.file_filter is not None
+        self.compile_context.compile_status.close_cls(config_info.cls.__name__, skip_deletes=skip_deletes)
 
         return compile_result, compiled_objects
 

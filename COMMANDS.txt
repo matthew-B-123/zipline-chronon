@@ -1,0 +1,18 @@
+# Compile single file
+docker-compose exec chronon bash -c "cd /srv/chronon && python3 /srv/chronon-python/src/ai/chronon/repo/compile.py --conf staging_queries/quickstart/purchases_from_minio.py"
+
+# Copy to spark-master
+docker cp python/test/sample/compiled/staging_queries/quickstart/purchases_from_minio.v1__1 zipline-chronon-spark-master-1:/tmp/
+
+# Run staging query
+docker-compose exec -u root spark-master bash -c "/opt/spark/bin/spark-submit --master local[*] --conf spark.hadoop.fs.s3a.access.key=minioadmin --conf spark.hadoop.fs.s3a.secret.key=minioadmin --conf spark.hadoop.fs.s3a.endpoint=http://minio:9000 --conf spark.hadoop.fs.s3a.path.style.access=true --conf spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem --conf spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkCatalog --conf spark.sql.catalog.spark_catalog.type=hadoop --conf spark.sql.catalog.spark_catalog.warehouse=s3a://chronon/warehouse --packages org.apache.hadoop:hadoop-aws:3.3.4,org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.5.0 --class ai.chronon.spark.Driver /tmp/chronon-spark.jar staging-query-backfill --conf-path /tmp/purchases_from_minio.v1__1 --end-date 2023-12-07"
+
+# Compile GroupBy
+docker-compose exec chronon bash -c "cd /srv/chronon && python3 /srv/chronon-python/src/ai/chronon/repo/compile.py --conf group_bys/quickstart/purchase_features.py"
+
+# Copy GroupBy to spark-master
+docker cp python/test/sample/compiled/group_bys/quickstart/purchase_features.v1__1 zipline-chronon-spark-master-1:/tmp/
+
+# Run GroupBy backfill
+docker-compose exec -u root spark-master bash -c "/opt/spark/bin/spark-submit --master local[*] --conf spark.hadoop.fs.s3a.access.key=minioadmin --conf spark.hadoop.fs.s3a.secret.key=minioadmin --conf spark.hadoop.fs.s3a.endpoint=http://minio:9000 --conf spark.hadoop.fs.s3a.path.style.access=true --conf spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem --conf spark.sql.catalog.spark_catalog=org.apache.iceberg.spark.SparkCatalog --conf spark.sql.catalog.spark_catalog.type=hadoop --conf spark.sql.catalog.spark_catalog.warehouse=s3a://chronon/warehouse --packages org.apache.hadoop:hadoop-aws:3.3.4,org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.5.0 --class ai.chronon.spark.Driver /tmp/chronon-spark.jar group-by-backfill --conf-path /tmp/purchase_features.v1__1 --end-date 2023-12-07"
+

@@ -49,9 +49,9 @@ class CompileStatus:
 
         self._update_display()
 
-    def close_cls(self, obj_type: str) -> None:
+    def close_cls(self, obj_type: str, skip_deletes: bool = False) -> None:
         if obj_type in self.cls_to_tracker:
-            self.cls_to_tracker[obj_type].close()
+            self.cls_to_tracker[obj_type].close(skip_deletes=skip_deletes)
             self._update_display()
 
     def close(self) -> None:

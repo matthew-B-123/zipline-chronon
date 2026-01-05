@@ -61,10 +61,14 @@ class ClassTracker:
             if not compiled.errors:
                 self.diff_result.added.append(compiled.name)
 
-    def close(self) -> None:
+    def close(self, skip_deletes: bool = False) -> None:
         self.closed = True
         self.recent_file = None
-        self.deleted_names = list(self.existing_objs.keys() - self.new_objs.keys())
+        # When compiling a single file (--conf), don't mark other files as deleted
+        if not skip_deletes:
+            self.deleted_names = list(self.existing_objs.keys() - self.new_objs.keys())
+        else:
+            self.deleted_names = []
 
     def to_status(self) -> Text:
         text = Text(overflow="fold", no_wrap=False)

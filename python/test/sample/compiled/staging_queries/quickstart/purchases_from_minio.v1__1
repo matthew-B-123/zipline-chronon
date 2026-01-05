@@ -1,0 +1,60 @@
+{
+  "metaData": {
+    "customJson": "{\"airflowDependencies\": []}",
+    "executionInfo": {
+      "conf": {
+        "common": {
+          "spark.chronon.partition.column": "_DATE"
+        }
+      },
+      "env": {
+        "common": {
+          "CUSTOMER_ID": "canary",
+          "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+          "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+          "GCP_PROJECT_ID": "canary-443022",
+          "GCP_REGION": "us-central1",
+          "VERSION": "latest"
+        },
+        "modeEnvironments": {
+          "backfill": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          },
+          "streaming": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          },
+          "upload": {
+            "CUSTOMER_ID": "canary",
+            "GCP_BIGTABLE_INSTANCE_ID": "zipline-canary-instance",
+            "GCP_DATAPROC_CLUSTER_NAME": "canary-2",
+            "GCP_PROJECT_ID": "canary-443022",
+            "GCP_REGION": "us-central1",
+            "VERSION": "latest"
+          }
+        }
+      },
+      "scheduleCron": "@daily"
+    },
+    "name": "quickstart.purchases_from_minio.v1__1",
+    "outputNamespace": "quickstart",
+    "sourceFile": "staging_queries/quickstart/purchases_from_minio.py",
+    "tableProperties": {
+      "provider": "iceberg",
+      "write.format.default": "parquet"
+    },
+    "team": "quickstart",
+    "version": "1"
+  },
+  "query": "\nSELECT\n    user_id,\n    UNIX_TIMESTAMP(ts) * 1000 as ts,\n    purchase_price,\n    item_category as category,\n    DATE_FORMAT(ts, 'yyyy-MM-dd') as ds\nFROM parquet.`s3a://chronon/warehouse/data/purchases/purchases.parquet`\nWHERE purchase_price > 0\nORDER BY ts\n",
+  "tableDependencies": []
+}

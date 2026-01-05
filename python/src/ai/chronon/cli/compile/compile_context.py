@@ -23,11 +23,12 @@ class ConfigInfo:
 
 @dataclass
 class CompileContext:
-    def __init__(self, ignore_python_errors: bool = False):
+    def __init__(self, ignore_python_errors: bool = False, file_filter: Optional[str] = None):
         self.chronon_root: str = os.getenv("CHRONON_ROOT", os.getcwd())
         self.teams_dict: Dict[str, Team] = teams.load_teams(self.chronon_root)
         self.compile_dir: str = "compiled"
         self.ignore_python_errors: bool = ignore_python_errors
+        self.file_filter: Optional[str] = file_filter  # e.g. "staging_queries/quickstart/purchases_from_minio.py"
 
         self.config_infos: List[ConfigInfo] = [
             ConfigInfo(folder_name="joins", cls=Join, config_type=ConfType.JOIN),
